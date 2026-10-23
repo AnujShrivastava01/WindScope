@@ -41,7 +41,7 @@ The scope is GB national wind generation for purchase decisions made between **1
 
 ## 1. Product overview
 
-WindScope is an analytics dashboard with six views:
+WindScope opens on a **landing page** (`/`) that explains the problem and the cutoff rule with visuals: a live forecast-vs-actual preview and headline metrics from the API, a cutoff-timeline diagram, the data pipeline, an animated wind-farm hero, and Lenis smooth scrolling (disabled when the user prefers reduced motion). **Enter dashboard** leads to six analytics views (`/overview` and onwards):
 
 | Page | Purpose |
 |---|---|
@@ -71,13 +71,13 @@ WindScope reconstructs the decision-time forecast for every settlement period an
 * **Honest data handling**: separate statuses for matched, missing actual, missing forecast, late-only forecast and half-hour non-target periods. Coverage and staleness follow explicit rules.
 * **Resilient ingestion**: chunked requests, bounded retries with backoff, `Retry-After` support, malformed-response handling, idempotent upserts and an audit log of every refresh.
 * **CSV import and export**: import validates columns and individual rows and reports rejected rows; export returns exactly the filtered data with UTC and UK timestamps, units and publish times.
-* **Engineering quality**: typed API (OpenAPI docs), 78 backend tests, 25 frontend tests, Ruff and ESLint, GitHub Actions CI, Docker Compose stack.
+* **Engineering quality**: typed API (OpenAPI docs), 78 backend tests, 29 frontend tests, Ruff and ESLint, GitHub Actions CI, Docker Compose stack.
 
 ## 4. Technology stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19, TypeScript, Vite, Tailwind CSS 4, accessible in-house UI primitives (shadcn-style, Radix Dialog), Recharts, React Router, TanStack Query, Lucide icons, Sonner notifications |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS 4, accessible in-house UI primitives (shadcn-style, Radix Dialog), Recharts, React Router, TanStack Query, Lucide icons, Sonner notifications, Lenis smooth scroll (landing page) |
 | Backend | Python 3.12, FastAPI, Pydantic v2, httpx, pandas, NumPy |
 | Storage | SQLite (stdlib `sqlite3`) with versioned migrations, unique keys and indexes |
 | Testing / quality | pytest, Ruff, Vitest, React Testing Library, axe-core, ESLint, TypeScript strict mode |
@@ -140,8 +140,9 @@ WindScope reconstructs the decision-time forecast for every settlement period an
 │   │   ├── components/
 │   │   │   ├── layout/                # Sidebar, Header, AppLayout
 │   │   │   ├── charts/                # Time-series, accuracy, vintage charts
+│   │   │   ├── landing/               # Wind-farm hero, live preview chart, cutoff timeline
 │   │   │   ├── kpi/  tables/  filters/  ui/
-│   │   ├── pages/                     # Overview, ForecastAnalysis, ForecastAccuracy,
+│   │   ├── pages/                     # Landing, Overview, ForecastAnalysis, ForecastAccuracy,
 │   │   │                              # HistoricalData, DataHealth, Methodology
 │   │   ├── services/api.ts            # Typed API client
 │   │   ├── hooks/                     # Query hooks, URL-synced filters
@@ -285,7 +286,7 @@ docker compose up --build
 
 | URL | What |
 |---|---|
-| http://localhost:3000 | Dashboard (nginx serving the React build, proxying `/api` to the backend) |
+| http://localhost:3000 | Landing page; the dashboard is at `/overview` (nginx serves the React build and proxies `/api` to the backend) |
 | http://localhost:8000/api/health | Backend health check |
 | http://localhost:8000/api/docs | Interactive OpenAPI documentation (also `/api/redoc`) |
 
@@ -297,13 +298,13 @@ The SQLite store is kept in the `windscope-data` named volume. Both services hav
 # Backend: 78 tests, lint and format checks
 cd backend && pytest && ruff check . && ruff format --check .
 
-# Frontend: 25 tests, lint, type-check and build
+# Frontend: 29 tests, lint, type-check and build
 cd frontend && npm test && npm run lint && npm run typecheck && npm run build
 ```
 
 Backend tests cover Elexon parsing, WIND filtering, timestamp normalisation, duplicates, cutoff inclusivity, rejection of late vintages, timestamp matching, DST, every metric formula, zero actuals, missing observations, empty datasets, client retry and failure paths, CSV validation and export, API parameter validation, and refresh success, partial and failed reporting.
 
-Frontend tests cover loading, success, empty and error states, KPI and chart rendering, filter-to-query propagation, server-side sorting and pagination, CSV export parameters, and an axe-core accessibility check.
+Frontend tests cover the landing page (live metrics, dashboard links, no invented numbers when the API is down, reduced-motion behaviour), loading, success, empty and error states, KPI and chart rendering, filter-to-query propagation, server-side sorting and pagination, CSV export parameters, and an axe-core accessibility check.
 
 All test fixtures are synthetic and labelled as such. CI runs everything on each push (`.github/workflows/ci.yml`).
 
@@ -380,8 +381,8 @@ This project was built with the help of an AI coding assistant. It helped with s
 
 **Part 1: customer overview (up to 5 min)**
 
-1. *(0:00)* The problem: each morning you buy tomorrow's power before you know how windy it will be. WindScope shows the wind forecast you actually had at that moment, and how wrong it tended to be.
-2. *(0:45)* **Overview**: the January 2026 decision window and the 10:00 D-1 cutoff. Walk through the KPIs, then the forecast-vs-actual chart (zoom with the brush) and the error chart. Point out the large over-forecasts around 11–12 and 27–28 January.
+1. *(0:00)* Start on the landing page: the live forecast-vs-actual preview and the cutoff timeline set up the story. The problem: each morning you buy tomorrow's power before you know how windy it will be. WindScope shows the wind forecast you actually had at that moment, and how wrong it tended to be.
+2. *(0:45)* Click **Enter dashboard** to open the **Overview**: the January 2026 decision window and the 10:00 D-1 cutoff. Walk through the KPIs, then the forecast-vs-actual chart (zoom with the brush) and the error chart. Point out the large over-forecasts around 11–12 and 27–28 January.
 3. *(2:00)* **Forecast Analysis**: choose a period, show the 12 eligible vintages, the selected 09:30 forecast and the later vintages excluded as hindsight. Change the cutoff to 08:00 and watch the selection change.
 4. *(3:00)* **Forecast Accuracy**: MAE about 2.0 GW, bias about +1.7 GW (wind over-forecast in 84 % of periods), the P10–P90 empirical range, error by hour of day, the daily bias and the largest errors table.
 5. *(4:15)* **Data Health and Historical Data**: complete coverage, refresh with explicit status, CSV export. Close with the limitations: wind alone does not set the procurement volume, and error ranges are descriptive.
