@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 import pandas as pd
 
 from app.services.actual_generation import parse_fuelhh_records
-from app.services.models import ActualRecord, DataSource, ForecastRecord, ParseResult
+from app.services.models import DataSource, ParseResult
 from app.services.wind_forecasts import parse_windfor_records
 from app.utils.time import UK_TZ
 
@@ -147,6 +147,3 @@ def forecasts_export_frame(items: list[dict[str, object]]) -> pd.DataFrame:
 
 def to_csv_bytes(frame: pd.DataFrame) -> bytes:
     return frame.to_csv(index=False, lineterminator="\n").encode("utf-8")
-
-
-ActualOrForecast = ActualRecord | ForecastRecord
