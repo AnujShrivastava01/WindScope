@@ -7,6 +7,7 @@ import { AppLayout } from '@/components/layout/AppLayout'
 import { LoadingBlock } from '@/components/ui/feedback'
 import { ApiError } from '@/services/api'
 
+const Landing = lazy(() => import('@/pages/Landing'))
 const Overview = lazy(() => import('@/pages/Overview'))
 const ForecastAnalysis = lazy(() => import('@/pages/ForecastAnalysis'))
 const ForecastAccuracy = lazy(() => import('@/pages/ForecastAccuracy'))
@@ -31,8 +32,9 @@ export function AppRoutes() {
   return (
     <Suspense fallback={<LoadingBlock className="p-6" />}>
       <Routes>
+        <Route index element={<Landing />} />
         <Route element={<AppLayout />}>
-          <Route index element={<Overview />} />
+          <Route path="overview" element={<Overview />} />
           <Route path="forecast-analysis" element={<ForecastAnalysis />} />
           <Route path="forecast-accuracy" element={<ForecastAccuracy />} />
           <Route path="historical-data" element={<HistoricalData />} />

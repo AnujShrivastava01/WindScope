@@ -1,10 +1,10 @@
 import { BookOpen, Database, Gauge, HeartPulse, LayoutDashboard, LineChart, X } from 'lucide-react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { cn } from '@/utils/cn'
 
 export const NAV_ITEMS = [
-  { to: '/', label: 'Overview', icon: LayoutDashboard },
+  { to: '/overview', label: 'Overview', icon: LayoutDashboard },
   { to: '/forecast-analysis', label: 'Forecast Analysis', icon: LineChart },
   { to: '/forecast-accuracy', label: 'Forecast Accuracy', icon: Gauge },
   { to: '/historical-data', label: 'Historical Data', icon: Database },
@@ -44,7 +44,9 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         aria-label="Primary"
       >
         <div className="flex h-16 items-center justify-between border-b border-white/5 px-5">
-          <Logo />
+          <Link to="/" aria-label="WindScope home" className="rounded-md">
+            <Logo />
+          </Link>
           <button
             type="button"
             className="rounded p-1 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden"
@@ -59,7 +61,6 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             <NavLink
               key={to}
               to={{ pathname: to, search }}
-              end={to === '/'}
               onClick={onClose}
               className={({ isActive }) =>
                 cn(

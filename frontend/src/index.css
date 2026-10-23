@@ -40,6 +40,14 @@
   .tabular {
     font-variant-numeric: tabular-nums;
   }
+  /* Faint engineering grid used behind the landing hero. */
+  .landing-grid {
+    background-image:
+      linear-gradient(to right, rgb(148 163 184 / 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(148 163 184 / 0.08) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at 30% 20%, black 30%, transparent 75%);
+  }
 }
 
 .recharts-wrapper :focus {
