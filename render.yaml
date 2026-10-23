@@ -5,15 +5,16 @@ services:
   - type: web
     name: windscope-api
     runtime: docker
-    rootDir: backend
-    dockerfilePath: ./Dockerfile
+    # Paths are relative to the repository root.
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
     healthCheckPath: /api/health
     envVars:
       - key: APP_ENV
         value: production
       - key: CORS_ORIGINS
-        sync: false # set to your Vercel URL, e.g. https://windscope.vercel.app
+        sync: false # set to your Vercel URL, e.g. https://windscope-vert.vercel.app
       - key: CORS_ORIGIN_REGEX
         value: ^https://.*\.vercel\.app$
       - key: AUTO_INGEST_ON_STARTUP

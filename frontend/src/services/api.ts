@@ -18,7 +18,8 @@ import type {
 /** Base URL of the backend. Empty string = same origin (dev proxy / nginx proxy). */
 export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
 
-const DEFAULT_TIMEOUT_MS = 30_000
+// Generous enough for a free-tier API host waking from sleep (cold start + data load).
+const DEFAULT_TIMEOUT_MS = 90_000
 const REFRESH_TIMEOUT_MS = 180_000
 
 export class ApiError extends Error {
