@@ -7,7 +7,10 @@ WindScope is a web application for a UK electricity utility's **day-ahead power 
 
 The scope is GB national wind generation for purchase decisions made between **1 and 31 January 2026** (delivery days 2 January to 1 February 2026). WindScope uses only Elexon BMRS **FUELHH** (actuals, `fuelType = WIND`) and **WINDFOR** (forecasts).
 
-> **Live deployment:** not yet published. This environment had no Vercel or backend-host credentials. The deployment configuration is complete, and the exact steps are in [Deployment](#19-deployment). No live URL is claimed until a deployment has been verified.
+> **Live application:** https://windscope-vert.vercel.app (landing page; the dashboard is at [`/overview`](https://windscope-vert.vercel.app/overview))
+> **Live API:** https://windscope-api.onrender.com ([health](https://windscope-api.onrender.com/api/health) · [docs](https://windscope-api.onrender.com/api/docs))
+>
+> The API runs on Render's free plan and sleeps after about 15 minutes idle; the first request can take up to a minute while it wakes and reloads the January data from Elexon.
 
 ---
 
@@ -356,7 +359,7 @@ cd frontend
 vercel --prod --build-env VITE_API_BASE_URL=https://<your-api-host>
 ```
 
-**Status:** not deployed from this environment. The Vercel CLI had no stored credentials, and no Render or Heroku credentials were available. Deploying needs the account owner to complete the steps above.
+**Status:** deployed and verified. The frontend is on Vercel (project `windscope`, `VITE_API_BASE_URL=https://windscope-api.onrender.com`), and the API is on Render, created from `render.yaml` with `CORS_ORIGINS=https://windscope-vert.vercel.app`. See [Deployment URL](#21-deployment-url) for what was checked.
 
 ## 20. Troubleshooting
 
@@ -371,7 +374,22 @@ vercel --prod --build-env VITE_API_BASE_URL=https://<your-api-host>
 
 ## 21. Deployment URL
 
-No verified public deployment yet; see [Deployment](#19-deployment). This section will be updated with the live Vercel URL once one has been deployed and checked.
+| | URL |
+|---|---|
+| **Application (Vercel)** | https://windscope-vert.vercel.app |
+| **Dashboard** | https://windscope-vert.vercel.app/overview |
+| **API (Render)** | https://windscope-api.onrender.com |
+| **API health** | https://windscope-api.onrender.com/api/health |
+| **API docs** | https://windscope-api.onrender.com/api/docs |
+
+Verified after deployment:
+
+* `/api/health` reports `ok`, with 1,536 FUELHH and 20,440 WINDFOR records ingested from Elexon on startup.
+* `/api/accuracy/summary` matches the local results: 744 matched periods, MAE about 1,996 MW, RMSE about 2,499 MW, bias about +1,728 MW, 100 % coverage.
+* CORS allows the Vercel origin (including the preflight for `POST /api/data/refresh`) and does not grant access to other origins.
+* In a browser, the landing page shows *Live API data*. Overview, Forecast Analysis (vintage explanation), Forecast Accuracy (9 charts), Historical Data (1,488 records), Data Health (*Healthy*, 100 % match rate) and Methodology all load without errors, and CSV export works.
+
+**Free-tier note:** the Render service sleeps when idle. The first visit after a pause can take up to a minute; the frontend waits up to 90 s and then loads normally.
 
 ## 22. AI-tool usage disclosure
 
