@@ -348,7 +348,7 @@ The deployment target is the **frontend on Vercel** and the **API on Render** (D
 
 **Frontend (Vercel)**
 
-1. Import the repository in Vercel and set **Root Directory** to `frontend`. `vercel.json` sets up the Vite build and SPA rewrites.
+1. Import the repository in Vercel and set **Root Directory** to `frontend` (required; otherwise Git-triggered builds produce an empty site and a 404). `vercel.json` sets up the Vite build and SPA rewrites. With the GitHub integration on, every push to `main` redeploys automatically.
 2. Add the environment variable `VITE_API_BASE_URL=https://<your-api-host>`, then deploy.
 3. Check that `https://<vercel-app>/` loads and that Data Health shows both datasets as healthy.
 
@@ -370,6 +370,7 @@ vercel --prod --build-env VITE_API_BASE_URL=https://<your-api-host>
 | CORS errors in the browser | Add the frontend origin to `CORS_ORIGINS` (or use `CORS_ORIGIN_REGEX`). |
 | Refresh shows **failed** or **partial** | Elexon is unreachable or returned errors. Existing data is untouched, and the error is in the refresh history. Retry later, or import CSVs on Historical Data. |
 | Port 8000 or 3000 already in use | Stop the other process, or change the host ports in `docker-compose.yml`. |
+| Vercel shows `404: NOT_FOUND` | The Vercel project must have **Root Directory = `frontend`** (Settings → Build and Deployment). With the GitHub integration on, a build from the repository root finds no app and produces an empty deployment. |
 | Start again with empty data | `docker compose down -v` (Docker), or delete `backend/data/windscope.db`. |
 
 ## 21. Deployment URL
